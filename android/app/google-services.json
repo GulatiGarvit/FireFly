@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "623405394057",
+    "project_id": "firefly-vihaan",
+    "storage_bucket": "firefly-vihaan.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623405394057:android:23447601888c2d60b4be58",
+        "android_client_info": {
+          "package_name": "com.example.firefly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKHds8cJ-IjWjgbmcNaenr2FUDbkTFyWs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623405394057:android:08c8ebc4b730da8ab4be58",
+        "android_client_info": {
+          "package_name": "com.example.phoenix"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKHds8cJ-IjWjgbmcNaenr2FUDbkTFyWs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
