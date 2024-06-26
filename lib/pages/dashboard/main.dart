@@ -3,6 +3,7 @@ import 'dart:core';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firefly/pages/ble/main.dart';
 import 'package:firefly/sos/intermediate_sos.dart';
 import 'package:flutter/material.dart';
 import 'package:firefly/apis/navigation.dart';
@@ -43,15 +44,28 @@ class _DashboardState extends State<Dashboard> {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       String personStrandedId = message.data["personStranded"];
-      double latitude = double.parse(message.data["latlng"]["coordinates"[1]]);
-      double longitude = double.parse(message.data["latlng"]["coordinates"[0]]);
+      double latitude = double.parse(message.data["lat"]);
+      double longitude = double.parse(message.data["lat"]);
       // GPSService((lat, long) {
       // Check how far they are
       updateStrandedPerson(personStrandedId, true);
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => IntermediateSosPage()));
     });
+
+    FirebaseMessaging.onBackgroundMessage(handleBackgroundFcm);
     //});
+  }
+
+  Future<void> handleBackgroundFcm(RemoteMessage message) async {
+    String personStrandedId = message.data["personStranded"];
+    double latitude = double.parse(message.data["latlng"]["coordinates"][1]);
+    double longitude = double.parse(message.data["latlng"]["coordinates"][0]);
+    // GPSService((lat, long) {
+    // Check how far they are
+    updateStrandedPerson(personStrandedId, true);
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => IntermediateSosPage()));
   }
 
   @override
@@ -217,6 +231,10 @@ class _DashboardState extends State<Dashboard> {
                         builder: (context) => IntermediateSosPage(),
                       ),
                     );
+                  },
+                  onBlePressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => BleExample()));
                   },
                 )
               ],

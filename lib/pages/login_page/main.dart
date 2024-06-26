@@ -60,7 +60,7 @@ class _OnboardingPageState extends State<LoginPage> {
           appBar: AppBar(
             backgroundColor: DarkModeColors.colorPrimary,
             title: const Text(
-              "firefly",
+              "Firefly",
               style: textMediumPrimaryBold,
             ),
           ),

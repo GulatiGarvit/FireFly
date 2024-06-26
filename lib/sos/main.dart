@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:firefly/apis/navigation.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:woosmap_flutter/woosmap_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,7 +20,15 @@ class _SosPageState extends State<SosPage> {
   WoosmapController? _controller;
   String? distance;
   String? time;
+  LatLng? loc;
+  Map<String, List<int>> map = {
+    "1": [3, 0],
+    "2": [3, 6],
+    "3": [0, 6]
+  };
+  String? currentUuid;
   String? exitName;
+  List<Marker> markers = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -251,7 +261,7 @@ class _SosPageState extends State<SosPage> {
 
   void loadMedKit() async {
     Map<String, dynamic> data =
-        await getMedkitRoute(28.62493571932967, 77.18738107481119);
+        await getMedkitRoute(map[currentUuid]![0], map[currentUuid]![1]);
 
     setState(() {
       time = "${data['eta']} min";
@@ -268,6 +278,7 @@ class _SosPageState extends State<SosPage> {
               "https://www.pinclipart.com/picdir/big/28-288762_all-photo-png-clipart-google-map-round-marker.png",
           scaledSize: WoosSize(height: 12, width: 12));
       var marker = Marker.create(markerOptions, _controller!);
+      markers.add(marker);
       marker.add();
 
       if (prev == null) {
@@ -352,21 +363,55 @@ class _SosPageState extends State<SosPage> {
     }
   }
 
-  void onVenueLoaded() async {
-    _controller!
-        .setUserLocation(28.62493571932967, 77.18738107481119, 0, 0, true);
-    _controller!.setZoom(18);
-
-    _controller!.setCenter(
-        LatLng(lat: 28.62493571932967, lng: 77.18738107481119),
-        WoosPadding(bottom: 0, left: 0, right: 0, top: 0));
-
-    if (widget.medKit) {
-      loadMedKit();
-      return;
+  void removeAllMarkers() {
+    for (var marker in markers) {
+      marker.remove();
     }
+  }
+
+  Future<void> locateMe() async {
+    Timer.periodic(Duration(seconds: 5), (timer) {
+      startScan();
+    });
+  }
+
+  void startScan() async {
+    FlutterBluePlus.startScan(
+        withServices: [Guid("bf27730d-860a-4e09-889c-2d8b6a9e0fe7")],
+        timeout: Duration(seconds: 10));
+
+    var subscription = FlutterBluePlus.scanResults.listen((results) async {
+      ScanResult? fin;
+      for (ScanResult r in results) {
+        if (fin == null || r.rssi.abs() < fin.rssi.abs()) fin = r;
+      }
+
+      if (fin == null) return;
+      currentUuid = fin.device.advName.split(" ")[1];
+      LatLng currentLoc =
+          await getCurrentPosition(fin.device.advName.split(" ")[1]);
+      if (loc == null ||
+          (currentLoc.lat != loc!.lat || currentLoc.lng != loc!.lng)) route();
+      setState(() {
+        loc = currentLoc;
+        _controller!.setUserLocation(loc!.lat, loc!.lng, 0, 0, true);
+        _controller!.setZoom(18);
+
+        // _controller!.setCenter(LatLng(lat: loc!.lat, lng: loc!.lng),
+        //     WoosPadding(bottom: 0, left: 0, right: 0, top: 0));
+      });
+    });
+  }
+
+  void route() async {
+    print("Routing!!!!!");
+    print("${map[currentUuid]![0]}, ${map[currentUuid]![1]}");
     Map<String, dynamic> data =
-        await getRoute(28.62493571932967, 77.18738107481119);
+        await getRoute(map[currentUuid]![0], map[currentUuid]![1]);
+
+    print("XXXXXXXXXX");
+
+    removeAllMarkers();
 
     setState(() {
       time = "${data['eta']} min";
@@ -400,8 +445,8 @@ class _SosPageState extends State<SosPage> {
       double diff2 = (l4 - l3).abs();
       if (l2 > l1 && l4 > l3) {
         while (l1 < l2 && l3 < l4) {
-          l1 += dff1 / 5;
-          l3 += diff2 / 5;
+          l1 += dff1 / 2;
+          l3 += diff2 / 2;
           MarkerOptions markerOptions =
               MarkerOptions(position: LatLng(lat: l1, lng: l3));
           markerOptions.icon = WoosIcon(
@@ -413,8 +458,8 @@ class _SosPageState extends State<SosPage> {
         }
       } else if (l2 > l1 && l4 < l3) {
         while (l1 < l2 && l3 > l4) {
-          l1 += dff1 / 5;
-          l3 -= diff2 / 5;
+          l1 += dff1 / 2;
+          l3 -= diff2 / 2;
           MarkerOptions markerOptions =
               MarkerOptions(position: LatLng(lat: l1, lng: l3));
           markerOptions.icon = WoosIcon(
@@ -426,8 +471,8 @@ class _SosPageState extends State<SosPage> {
         }
       } else if (l2 < l1 && l4 > l3) {
         while (l1 > l2 && l3 < l4) {
-          l1 -= dff1 / 5;
-          l3 += diff2 / 5;
+          l1 -= dff1 / 2;
+          l3 += diff2 / 2;
           MarkerOptions markerOptions =
               MarkerOptions(position: LatLng(lat: l1, lng: l3));
           markerOptions.icon = WoosIcon(
@@ -439,8 +484,8 @@ class _SosPageState extends State<SosPage> {
         }
       } else {
         while (l1 > l2 && l3 > l4) {
-          l1 -= dff1 / 5;
-          l3 -= diff2 / 5;
+          l1 -= dff1 / 2;
+          l3 -= diff2 / 2;
           MarkerOptions markerOptions =
               MarkerOptions(position: LatLng(lat: l1, lng: l3));
           markerOptions.icon = WoosIcon(
@@ -460,11 +505,19 @@ class _SosPageState extends State<SosPage> {
       MarkerOptions markerOptions =
           MarkerOptions(position: LatLng(lat: ll.lat, lng: ll.lng));
       markerOptions.icon = WoosIcon(
-          url:
-              "https://static-00.iconduck.com/assets.00/fire-emoji-402x512-8ma95d17.png",
-          scaledSize: WoosSize(height: 36, width: 36));
+          url: "https://www.freeiconspng.com/uploads/red-circle-icon-1.png",
+          scaledSize: WoosSize(height: 35, width: 35));
       var marker = Marker.create(markerOptions, _controller!);
       marker.add();
+    }
+  }
+
+  void onVenueLoaded() async {
+    locateMe();
+
+    if (widget.medKit) {
+      loadMedKit();
+      return;
     }
   }
 }

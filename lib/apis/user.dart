@@ -48,14 +48,15 @@ Future<bool> updateFcm(String fuid, String fcmKey) async {
   return response.statusCode == 200;
 }
 
-Future<void> updateStrandedPerson(String strandedPersonId, bool isConfirmed) async {
-  Map<String, dynamic> data = {
-    "isConfirmed": isConfirmed
-  };
+Future<void> updateStrandedPerson(
+    String strandedPersonId, bool isConfirmed) async {
+  Map<String, dynamic> data = {"isConfirmed": isConfirmed};
 
-  await http.patch(
+  http.Response response = await http.patch(
     Uri.parse(base + "/personStranded/$strandedPersonId"),
     headers: Map.from({"Content-Type": "application/json"}),
     body: jsonEncode(data),
   );
+
+  print("update stranded: ${response.statusCode}");
 }

@@ -215,7 +215,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_blue:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: flutter_blue
       sha256: f7f76b9b80455b0375693ec96c276fadb01e94d8441fa1740a64980cd1aeda5c
@@ -223,7 +223,7 @@ packages:
     source: hosted
     version: "0.8.0"
   flutter_blue_plus:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: flutter_blue_plus
       sha256: "35494cd7b303814a156a57e4ec00a29427c59a62f3d44079b772ef685ae4914f"

@@ -6,39 +6,51 @@ import 'package:woosmap_flutter/woosmap_flutter.dart';
 
 const String base = "https://fire-fly-five.vercel.app";
 
-Future<Map<String, dynamic>> getRoute(double lat, double long) async {
+Future<Map<String, dynamic>> getRoute(int x, int y) async {
   http.Response response = await http.get(
-    Uri.parse(base + "/nav?lat=$long&long=$lat"),
+    Uri.parse(base + "/nav?x=$x&y=$y"),
     headers: Map.from({"Content-Type": "application/json"}),
   );
 
-  print("getRoute: ${response.body}");
+  print("RRRROOOO: ${response.body}");
 
   if (response.statusCode == 200) {
     Map<String, dynamic> data = jsonDecode(response.body);
     List<LatLng> route = [];
+
     for (var element in data['data']['path']) {
-      if (element.length < 2) continue;
       route.add(LatLng(
-        lat: element[1],
-        lng: element[0],
+        lat: double.parse(element[0]),
+        lng: double.parse(element[1]),
       ));
     }
     return {
       "route": route,
-      "eta": data['data']['time'],
-      "distance": data['data']['dis'],
-      "exitName": data['data']['goalName']
+      "eta": data['data']['time'] / 45,
+      "distance": data['data']['time'] * 5,
+      "exitName": "Fire Exit"
     };
   } else {
     return {};
   }
 }
 
+Future<LatLng> getCurrentPosition(String uuid) async {
+  http.Response response = await http.get(
+    Uri.parse(base + "/nav/getCoord?uuid=$uuid"),
+    headers: Map.from({"Content-Type": "application/json"}),
+  );
+
+  Map<String, dynamic> data = jsonDecode(response.body);
+  return new LatLng(
+      lat: double.parse(data['data']['lat']),
+      lng: double.parse(data['data']['lng']));
+}
+
 Future<List<LatLng>> getFireNodes() async {
   List<LatLng> fireNodes = [];
   http.Response response = await http.get(
-    Uri.parse(base + "/ucs/fireNodes"),
+    Uri.parse(base + "/nav/getFire"),
     headers: Map.from({"Content-Type": "application/json"}),
   );
 
@@ -47,36 +59,36 @@ Future<List<LatLng>> getFireNodes() async {
   Map<String, dynamic> data = jsonDecode(response.body);
   for (var element in data['data']) {
     fireNodes.add(LatLng(
-      lat: element[1],
-      lng: element[0],
+      lat: element[0],
+      lng: element[1],
     ));
   }
 
   return fireNodes;
 }
 
-Future<Map<String, dynamic>> getMedkitRoute(double lat, double long) async {
+Future<Map<String, dynamic>> getMedkitRoute(int x, int y) async {
   http.Response response = await http.get(
-    Uri.parse(base + "/ucs/getmedkit?lat=$long&long=$lat"),
+    Uri.parse(base + "/nav/getMedkit?x=$x&y=$y"),
     headers: Map.from({"Content-Type": "application/json"}),
   );
 
-  print("getMedkitRoute: ${response.body}");
+  print("RRRROOOO: ${response.body}");
 
   if (response.statusCode == 200) {
     Map<String, dynamic> data = jsonDecode(response.body);
     List<LatLng> route = [];
+
     for (var element in data['data']['path']) {
-      if (element.length < 2) continue;
       route.add(LatLng(
-        lat: element[1],
-        lng: element[0],
+        lat: double.parse(element[0]),
+        lng: double.parse(element[1]),
       ));
     }
     return {
       "route": route,
-      "eta": data['data']['time'],
-      "distance": data['data']['dis']
+      "eta": data['data']['time'] / 45,
+      "distance": data['data']['time'] * 5
     };
   } else {
     return {};

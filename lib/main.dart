@@ -1,5 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firefly/pages/dashboard/main.dart';
 import 'package:firefly/pages/login_page/main.dart';
+import 'package:firefly/sos/main.dart';
 import 'package:flutter/material.dart';
 import 'package:firefly/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
       ),
-      home: LoginPage(),
+      home: Dashboard(),
     );
   }
 }

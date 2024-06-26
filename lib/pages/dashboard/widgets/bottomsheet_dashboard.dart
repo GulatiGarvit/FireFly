@@ -4,8 +4,8 @@ import 'package:firefly/colors/dark_mode.dart';
 
 class BottomsheetDashboard extends StatefulWidget {
   BottomsheetDashboard(
-      {super.key, required this.onSosPressed, required this.onExplorePressed});
-  VoidCallback onSosPressed, onExplorePressed;
+      {super.key, required this.onSosPressed, required this.onExplorePressed, required this.onBlePressed});
+  VoidCallback onSosPressed, onExplorePressed, onBlePressed;
 
   @override
   State<BottomsheetDashboard> createState() => _BottomsheetDashboardState();
@@ -81,27 +81,55 @@ class _BottomsheetDashboardState extends State<BottomsheetDashboard> {
           const SizedBox(
             height: 16,
           ),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
-            child: ElevatedButton(
-              style: ButtonStyle(
-                padding: MaterialStateProperty.all(EdgeInsets.all(12)),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                )),
-                backgroundColor: MaterialStateProperty.all(
-                  Colors.green,
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(EdgeInsets.all(12)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      )),
+                      backgroundColor: MaterialStateProperty.all(
+                        Colors.grey,
+                      ),
+                      elevation: MaterialStateProperty.all(4),
+                    ),
+                    child: Text(
+                      'Test BLE',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    onPressed: widget.onBlePressed,
+                  ),
                 ),
-                elevation: MaterialStateProperty.all(4),
               ),
-              child: Text(
-                'Explore Building',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(EdgeInsets.all(12)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      )),
+                      backgroundColor: MaterialStateProperty.all(
+                        Colors.green,
+                      ),
+                      elevation: MaterialStateProperty.all(4),
+                    ),
+                    child: Text(
+                      'Explore',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    onPressed: widget.onExplorePressed,
+                  ),
+                ),
               ),
-              onPressed: widget.onExplorePressed,
-            ),
+            ],
           ),
           const SizedBox(
             height: 8,
